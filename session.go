@@ -16,6 +16,7 @@ import (
 // refresh the access token if it is invalid
 type Session struct {
 	State      string // a random 16 bit hex encoded string, to verify callback redirects
+	token      *oauth2.Token
 	config     *oauth2.Config
 	httpClient *http.Client
 }
@@ -48,12 +49,12 @@ func (s *Session) AuthURL() string {
 // authenticated requests
 func (s *Session) Callback(code string) error {
 	ctx := context.Background()
-	tok, err := s.config.Exchange(ctx, code)
+	var err error
+	s.token, err = s.config.Exchange(ctx, code)
 	if err != nil {
 		return err
 	}
-
-	s.httpClient = s.config.Client(ctx, tok)
+	s.httpClient = s.config.Client(ctx, s.token)
 	return nil
 }
 
@@ -82,4 +83,9 @@ func (s *Session) doJSON(method, path string, respBody interface{}) error {
 	defer res.Body.Close()
 
 	return json.NewDecoder(res.Body).Decode(&respBody)
+}
+
+// AccessToken fetches the internal access token
+func (s *Session) AccessToken() string {
+	return s.token.AccessToken
 }
