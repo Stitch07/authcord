@@ -1,16 +1,18 @@
 package authcord
 
 import (
-	"golang.org/x/oauth2"
 	"io"
 	"net/http"
+
+	"golang.org/x/oauth2"
 )
 
-const ApiUrl = "http://discordapp.com/api/v6"
+// APIUrl is Discord's base API Url
+const APIUrl = "http://discordapp.com/api/v6"
 
-// a wrapper over http.NewRequest to append the ApiUrl to the path
+// a wrapper over http.NewRequest to append the APIUrl to the path
 func newRequest(method, path string, body io.Reader) *http.Request {
-	req, _ := http.NewRequest(method, ApiUrl+path, body)
+	req, _ := http.NewRequest(method, APIUrl+path, body)
 	return req
 }
 
